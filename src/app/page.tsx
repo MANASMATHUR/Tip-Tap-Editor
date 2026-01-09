@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-const PremiumEditor = dynamic(() => import('@/components/PremiumEditor'), {
+const PremiumEditor = dynamic(() => import('@/components/Editor'), {
   ssr: false,
   loading: () => (
     <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center">
