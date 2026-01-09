@@ -1,4 +1,4 @@
-# OpenSphere Editorial - Tiptap Pagination Editor
+# Tiptap Pagination Editor
 
 A Tiptap editor with real-time "Virtual Pagination" designed for legal professionals.
 
