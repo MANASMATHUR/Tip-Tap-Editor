@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OpenSphere Editorial - Tiptap Pagination Editor
 
-## Getting Started
+A Tiptap editor with real-time "Virtual Pagination" designed for legal professionals.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Approach: Virtual Slicing & Measurement
+The core challenge of pagination in rich text editors is maintaining a single document state while providing physical page boundaries.
+
+## Architecture & Logic
+
+### High-Level Architecture
+```mermaid
+graph TD
+    User([User]) --> Editor[Tiptap Editor Component]
+    Editor --> Logic[Virtual Pagination Extension]
+    Logic --> Observer[ResizeObserver]
+    Observer --> Height[Measure ScrollHeight]
+    Height --> Calc[Calculate Page Count]
+    Calc --> UI[Update Visual Dividers & Page Numbers]
+    Calc --> Print[Standardize Print Layout]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Pagination Logic Flow
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant E as Tiptap Editor
+    participant R as ResizeObserver
+    participant P as Pagination Logic
+    participant D as DOM (Visual Dividers)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    U->>E: Types/Pastes Content
+    E->>R: Content Height Changes
+    R->>P: Trigger Recalculation
+    P->>P: height / usableHeightPerPage
+    P->>D: Update Dividers Position
+    P->>D: Update Page Footer Meta
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### How it works:
+1. **Real-time Measurement**: We use a `ResizeObserver` on the editor content area to track visual height.
+2. **US Letter Simulation**: The editor is constrained to an `8.5in` width. We calculate the required page count by dividing the total content height by the usable vertical space (`11in` minus margins).
+3. **Ghost Dividers**: Visual "Page Break" markers are positioned at exact physical intervals (`11in`, `22in`, etc.). These markers are hidden during printing using `@media print`.
+4. **Typography Fidelity**: We use `EB Garamond` (Serif) for the document content to match USCIS legal standards, ensuring that "What You See Is What You Get" (WYSIWYG) when printed.
 
-## Learn More
+### Trade-offs & Limitations:
+- **Node Splitting**: Currently, we use a single continuous ProseMirror instance. While visual breaks appear, a single paragraph might still "span" across the visual gap. In a full production version, we would implement custom node views to force breaks between specific blocks.
+- **Scroll Synchronization**: Large documents (50+ pages) might see a slight lag in indicator updates due to DOM measurement. This could be optimized with a dedicated `requestAnimationFrame` loop.
 
-To learn more about Next.js, take a look at the following resources:
+### Future Improvements:
+- **Header/Footer Support**: Individual page headers for case numbers/petitioner names.
+- **Node-aware Breaks**: Ensuring that headings never fall at the very bottom of a page (orphan/widow control).
+- **Direct PDF Generation**: Integrating `jspdf` or `html2pdf.js` for one-click downloads without relying on browser print dialogs.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Getting Started
+1. Clone the repository.
+2. Run `npm install`.
+3. Start the development server with `npm run dev`.
+4. Open `http://localhost:3000`.
