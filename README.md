@@ -1,59 +1,75 @@
-# OpenSphere Editorial - Tiptap Pagination Editor
+# OpenSphere Editorial
 
-A Tiptap editor with real-time "Virtual Pagination" designed for legal professionals.
+A premium, paginated rich text editor built for professional document drafting. Combining a distraction-free writing environment with real-time print simulation, OpenSphere Editorial bridges the gap between web editors and traditional word processors.
 
+![OpenSphere Editorial Banner](https://images.unsplash.com/photo-1542435503-956c469947f6?auto=format&fit=crop&q=80&w=2000&ixlib=rb-4.0.3)
 
-## Approach: Virtual Slicing & Measurement
-The core challenge of pagination in rich text editors is maintaining a single document state while providing physical page boundaries.
+## ✨ Key Features
 
-## Architecture & Logic
+- **📄 Real-Time Pagination**: Experience true-to-life US Letter (8.5" x 11") page breaks as you type.
+- **🎭 Motion-Rich UI**: Smooth, premium animations powered by **GSAP** for loading states, editor entrance, and interactions.
+- **👁️ Focus Mode**: A dedicated distraction-free environment that elegantly fades out UI elements for deep work.
+- **📝 Intelligent Outline**: Auto-generated document navigation that tracks headings in real-time.
+- **🖨️ Print Fidelity**: What you see is exactly what you print. Pixel-perfect PDF generation.
+- **🔧 Rich Formatting**: Full support for tables, task lists, images, highlighting, and typography.
 
-### High-Level Architecture
-```mermaid
-graph TD
-    User([User]) --> Editor[Tiptap Editor Component]
-    Editor --> Logic[Virtual Pagination Extension]
-    Logic --> Observer[ResizeObserver]
-    Observer --> Height[Measure ScrollHeight]
-    Height --> Calc[Calculate Page Count]
-    Calc --> UI[Update Visual Dividers & Page Numbers]
-    Calc --> Print[Standardize Print Layout]
+## 🛠️ Technology Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/) (React 19, Client Components)
+- **Editor Engine**: [Tiptap](https://tiptap.dev/) (Headless ProseMirror wrapper)
+- **Animations**: [GSAP](https://gsap.com/) & `@gsap/react`
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Linting**: ESLint
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/manasmathur/opensphere-editorial.git
+    cd opensphere-editorial
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    # This will also install gsap and @tiptap packages
+    ```
+
+3.  **Start the development server**
+    ```bash
+    npm run dev
+    ```
+
+4.  **Open the application**
+    Visit `http://localhost:3000` to start editing.
+
+## 📂 Project Structure
+
+```
+src/
+├── app/
+│   ├── layout.tsx       # Root layout including fonts and globals
+│   ├── page.tsx         # Main entry point with GSAP Loading Screen
+│   └── globals.css      # Global styles and Tailwind imports
+├── components/
+│   ├── Editor.jsx       # Core Tiptap editor instance & GSAP entrance logic
+│   └── Toolbar.jsx      # Floating toolbar with 'ToolbarButton' components
+└── ...
 ```
 
-### Pagination Logic Flow
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant E as Tiptap Editor
-    participant R as ResizeObserver
-    participant P as Pagination Logic
-    participant D as DOM (Visual Dividers)
+## 🎨 Design Philosophy
 
-    U->>E: Types/Pastes Content
-    E->>R: Content Height Changes
-    R->>P: Trigger Recalculation
-    P->>P: height / usableHeightPerPage
-    P->>D: Update Dividers Position
-    P->>D: Update Page Footer Meta
-```
+OpenSphere Editorial mimics the tactile feel of high-end software:
+- **Glassmorphism**: Subtle transluscent backgrounds on floating menus.
+- **Micro-Interactions**: Every button press feels responsive with spring physics.
+- **Typography**: Uses *EB Garamond* for content to emulate print media, and *Inter* for UI clarity.
 
-### How it works:
-1. **Real-time Measurement**: We use a `ResizeObserver` on the editor content area to track visual height.
-2. **US Letter Simulation**: The editor is constrained to an `8.5in` width. We calculate the required page count by dividing the total content height by the usable vertical space (`11in` minus margins).
-3. **Ghost Dividers**: Visual "Page Break" markers are positioned at exact physical intervals (`11in`, `22in`, etc.). These markers are hidden during printing using `@media print`.
-4. **Typography Fidelity**: We use `EB Garamond` (Serif) for the document content to match USCIS legal standards, ensuring that "What You See Is What You Get" (WYSIWYG) when printed.
-
-### Trade-offs & Limitations:
-- **Node Splitting**: Currently, we use a single continuous ProseMirror instance. While visual breaks appear, a single paragraph might still "span" across the visual gap. In a full production version, we would implement custom node views to force breaks between specific blocks.
-- **Scroll Synchronization**: Large documents (50+ pages) might see a slight lag in indicator updates due to DOM measurement. This could be optimized with a dedicated `requestAnimationFrame` loop.
-
-### Future Improvements:
-- **Header/Footer Support**: Individual page headers for case numbers/petitioner names.
-- **Node-aware Breaks**: Ensuring that headings never fall at the very bottom of a page (orphan/widow control).
-- **Direct PDF Generation**: Integrating `jspdf` or `html2pdf.js` for one-click downloads without relying on browser print dialogs.
-
-## Getting Started
-1. Clone the repository.
-2. Run `npm install`.
-3. Start the development server with `npm run dev`.
-4. Open `http://localhost:3000`.
+---
+*Built with ❤️ by OpenSphere Team*
