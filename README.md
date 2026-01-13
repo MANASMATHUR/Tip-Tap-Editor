@@ -71,5 +71,4 @@ OpenSphere Editorial mimics the tactile feel of high-end software:
 - **Micro-Interactions**: Every button press feels responsive with spring physics.
 - **Typography**: Uses *EB Garamond* for content to emulate print media, and *Inter* for UI clarity.
 
----
-*Built with ❤️ by OpenSphere Team*
+
